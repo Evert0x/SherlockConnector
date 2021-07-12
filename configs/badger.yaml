@@ -1,0 +1,11 @@
+---
+interval: 120
+max-age: 60
+trigger: Badger
+args:
+  "deviation": 0.05
+actions:
+  Outcome:
+    max-age: 20
+    args:
+      "meme": 0.05

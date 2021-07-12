@@ -1,0 +1,10 @@
+---
+interval: 120
+max-age: 60
+trigger: example
+actions:
+  outcome:
+    max-age: 20
+    args:
+      - "1"
+      "2"
