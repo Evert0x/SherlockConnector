@@ -37,11 +37,14 @@ def verify(config):
 
 @cli.command("single")
 @click.argument("config")
-def watch(config):
+@click.option('-v', '--verify', is_flag=True)
+def watch(config, verify):
     """
     Run all actions defined in the config a single time, ignoring interval.
     """
     configs = get_configs(config)
+    if verify:
+        c.verify()
 
     c = Client(configs)
     c.single()
