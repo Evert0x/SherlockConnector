@@ -22,13 +22,11 @@ from shercon.abstracts import Trigger
 
 class Badger(Trigger):
     def run(*args, config={}):
-        print("test", args, config)
         badgerPrice, badgerTokens, bitcoinPrice, bitcoinPremium = args
 
         tvl = badgerPrice * badgerTokens["formatted"]
         expectedPremium = tvl * bitcoinPremium["percentageBlock"]
         actualPremium = bitcoinPremium["premium"] * bitcoinPrice
-        print(expectedPremium, actualPremium)
 
         mi = actualPremium - actualPremium * config["deviation"]
         ma = actualPremium + actualPremium * config["deviation"]

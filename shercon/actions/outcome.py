@@ -19,6 +19,7 @@
 """
 
 from shercon.abstracts import Action
+import shercon.waiters
 
 class Outcome(Action):
     def run(*args, config={}):
@@ -27,4 +28,5 @@ class Outcome(Action):
         tvl = badgerPrice * badgerTokens["formatted"]
         premium = tvl / bitcoinPrice * bitcoinPremium["premium"]
 
-        print(premium)
+        print("Updating..", premium)
+        return shercon.waiters.plugins["Tx"](premium)

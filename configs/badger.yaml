@@ -1,5 +1,5 @@
 ---
-interval: 120
+interval: 1
 max-age: 60
 trigger: Badger
 args:

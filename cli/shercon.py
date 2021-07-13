@@ -48,3 +48,17 @@ def watch(config, verify):
 
     c = Client(configs)
     c.single()
+
+@cli.command("loop")
+@click.argument("config")
+@click.option('-v', '--verify', is_flag=True)
+def watch(config, verify):
+    """
+    Run all actions defined in the config using the interval.
+    """
+    configs = get_configs(config)
+    if verify:
+        c.verify()
+
+    c = Client(configs)
+    c.loop()

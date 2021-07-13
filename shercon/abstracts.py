@@ -12,3 +12,10 @@ class Action:
     """Doesn't return anything"""
     def run(*args, **kwargs):
         pass
+
+class Waiter:
+    """If action is executed, returns waiter class"""
+
+    """Returns boolean to indicate waiting"""
+    def verify_done():
+        pass

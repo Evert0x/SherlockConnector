@@ -1,5 +1,7 @@
 import os
 import yaml
+import datetime
+import time
 
 import shercon.sources
 import shercon.triggers
@@ -68,6 +70,8 @@ class Client:
     def __init__(self, configs=[]):
         self.configs = configs
         self.tasks = []
+        self.waiters = {}
+        self.timers = {}
 
     def __enrich_data(self, data):
         data["trigger_file"] = os.path.join(
@@ -91,6 +95,7 @@ class Client:
         for config in self.configs:
             data = self.__load_file(config)
             data = self.__enrich_data(data)
+            data["id"] = config
             self.tasks.append(data)
 
     def __execute_source(self, source, args):
@@ -114,7 +119,9 @@ class Client:
         sources = parse_file(options["file"])
         data = self.__execute_sources(sources)
         # TODO verify max age
-        shercon.actions.plugins.get(action).run(*data, config=options["args"])
+        return shercon.actions.plugins.get(action).run(
+            *data, config=options["args"]
+        )
 
     def __run_task(self, task):
         sources = parse_file(task["trigger_file"])
@@ -123,7 +130,9 @@ class Client:
         trigger = shercon.triggers.plugins[task["trigger"]]
         if trigger.run(*data, config=task["args"]):
             for action, options in task["actions"].items():
-                self.__run_action(action, options)
+                self.waiters[task["id"]] = self.__run_action(
+                    action, options
+                )
 
     def verify(self):
         self.__parse()
@@ -137,4 +146,34 @@ class Client:
 
     def loop(self):
         self.__parse()
-        # TODO, schedule tasks based on interval
+
+        while True:
+            start = datetime.datetime.now()
+
+            for task in self.tasks:
+                last = self.timers.get(task["id"], datetime.datetime.min)
+                now = datetime.datetime.now()
+
+                if (now-last).seconds < task["interval"]:
+                    continue
+
+                waiter = self.waiters.get(task["id"])
+                if waiter:
+                    if not waiter.verify_done():
+                        continue
+                    del self.waiters[task["id"]]
+
+                error = (now-last).seconds - task["interval"]
+                if last != datetime.datetime.min and error > 5:
+                    print("Execution error of %s seconds for %s" % (
+                        error, task["id"]
+                    ))
+
+                self.__run_task(task)
+                # Can also be `datetime.datetime.now()`, but like this
+                # It will execute on interval defined in config
+                self.timers[task["id"]] = now
+
+            # Dont do too many loopy loopy
+            if (datetime.datetime.now() - start).seconds < 3:
+                time.sleep(1)
