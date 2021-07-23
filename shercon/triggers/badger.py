@@ -15,21 +15,25 @@
 - module: SherlockPremium
   args:
   - 'badger.protocol'
-  - '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599'
+  - '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599'
+- module: SherlockPremiumArraySize
+  args:
+  - 'badger.protocol'
 """
 
 from shercon.abstracts import Trigger
 
 class Badger(Trigger):
-    def run(*args, config={}):
-        badgerPrice, badgerTokens, bitcoinPrice, bitcoinPremium = args
-
+    def run(*args, starg={}, config={}):
+        badgerPrice, badgerTokens, bitcoinPrice, bitcoinPremium, size = args
+        assert size == 1, "MISSING_BADGER_TOKEN"
+        print(config)
         tvl = badgerPrice * badgerTokens["formatted"]
-        expectedPremium = tvl * bitcoinPremium["percentageBlock"]
-        actualPremium = bitcoinPremium["premium"] * bitcoinPrice
+        expectedPremium = tvl * config["premium-rate-block"]
+        actualPremium = bitcoinPremium * bitcoinPrice
 
-        mi = actualPremium - actualPremium * config["deviation"]
-        ma = actualPremium + actualPremium * config["deviation"]
+        mi = actualPremium - actualPremium * starg["deviation"]
+        ma = actualPremium + actualPremium * starg["deviation"]
 
         if mi < expectedPremium < ma:
           return False

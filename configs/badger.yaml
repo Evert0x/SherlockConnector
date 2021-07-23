@@ -1,6 +1,11 @@
 ---
 interval: 1
 max-age: 60
+config:
+  "premium-rate-year": 0.1
+  "premium-rate-block": 0.000000043
+  "premium-rate-split":
+    "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599": 1.0
 trigger: Badger
 args:
   "deviation": 0.05
@@ -8,4 +13,5 @@ actions:
   Outcome:
     max-age: 20
     args:
-      "meme": 0.05
+      "protocol": "badger.protocol"
+      "token": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"

@@ -6,13 +6,13 @@ from shercon.abstracts import Source
 COINGECKO = "https://api.coingecko.com/api/v3"
 
 class CoingeckoSpotPrice(Source):
-    def run(*args):
+    def run(*args, config={}):
         url = COINGECKO + "/simple/price"
         payload = {"ids": ",".join(args), "vs_currencies": ["usd"]}
         return requests.get(url, params=payload).json()
 
 class CoingeckoMovingAverage(Source):
-    def run(*args):
+    def run(*args, config={}):
         token, days = args
 
         url = COINGECKO + "/coins/%s/market_chart" % token

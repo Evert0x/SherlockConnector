@@ -43,10 +43,10 @@ def watch(config, verify):
     Run all actions defined in the config a single time, ignoring interval.
     """
     configs = get_configs(config)
-    if verify:
-        c.verify()
 
     c = Client(configs)
+    if verify:
+        c.verify()
     c.single()
 
 @cli.command("loop")
@@ -57,8 +57,9 @@ def watch(config, verify):
     Run all actions defined in the config using the interval.
     """
     configs = get_configs(config)
-    if verify:
-        c.verify()
 
     c = Client(configs)
+
+    if verify:
+        c.verify()
     c.loop()

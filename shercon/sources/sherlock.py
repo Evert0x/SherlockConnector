@@ -1,21 +1,26 @@
 import requests
-import sha3
 
-from shercon.config import provider
+from shercon.config import provider, sherlock
 from shercon.abstracts import Source
+from shercon.misc import identifier
+
 import shercon.abi
 
 class SherlockPremium(Source):
-    def run(*args):
+    def run(*args, config={}):
         protocol, token = args
+        pid = identifier(protocol)
 
-        k = sha3.keccak_256()
-        k.update(protocol.encode())
+        c = provider.eth.contract(
+            address=sherlock,
+            abi=shercon.abi.plugins["sherlock"]
+        )
+        return c.functions.getProtocolPremium(pid, token).call()
 
-        identifier = k.hexdigest()
-        # TODO, contract calls to get current premium
-        return {
-            "premium": 0.00000006,
-            "percentageYear": 0.01,
-            "percentageBlock": 0.000000004
-        }
+class SherlockPremiumArraySize(Source):
+    """Returns amount of tokens protocol uses to pay premiums"""
+    def run(*args, config={}):
+        protocol, = args
+        pid = identifier(protocol)
+
+        return 1

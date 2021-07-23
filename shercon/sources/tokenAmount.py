@@ -5,7 +5,7 @@ from shercon.abstracts import Source
 import shercon.abi
 
 class TokenAmount(Source):
-    def run(*args):
+    def run(*args, config={}):
         owner, token = args
         c = provider.eth.contract(address=token, abi=shercon.abi.plugins["erc20"])
         decimals = c.functions.decimals().call()

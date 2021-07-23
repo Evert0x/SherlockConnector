@@ -98,40 +98,44 @@ class Client:
             data["id"] = config
             self.tasks.append(data)
 
-    def __execute_source(self, source, args):
+    def __execute_source(self, source, args, config):
         if args:
-            return shercon.sources.plugins.get(source).run(*args)
-        return shercon.sources.plugins.get(source).run()
+            return shercon.sources.plugins.get(source).run(*args, config=config)
+        return shercon.sources.plugins.get(source).run(config=config)
 
-    def __execute_sources(self, sources):
+    def __execute_sources(self, sources, config):
         if not sources:
             return []
 
         data = []
         for source in sources:
             data.append(
-                self.__execute_source(source["module"], source.get("args"))
+                self.__execute_source(
+                    source["module"],
+                    source.get("args"),
+                    config
+                )
             )
 
         return data
 
-    def __run_action(self, action, options):
+    def __run_action(self, action, options, config):
         sources = parse_file(options["file"])
-        data = self.__execute_sources(sources)
+        data = self.__execute_sources(sources, config)
         # TODO verify max age
         return shercon.actions.plugins.get(action).run(
-            *data, config=options["args"]
+            *data, starg=options["args"], config=config
         )
 
     def __run_task(self, task):
         sources = parse_file(task["trigger_file"])
-        data = self.__execute_sources(sources)
+        data = self.__execute_sources(sources, task["config"])
 
         trigger = shercon.triggers.plugins[task["trigger"]]
-        if trigger.run(*data, config=task["args"]):
+        if trigger.run(*data, starg=task["args"], config=task["config"]):
             for action, options in task["actions"].items():
                 self.waiters[task["id"]] = self.__run_action(
-                    action, options
+                    action, options, task["config"]
                 )
 
     def verify(self):

@@ -1,16 +1,16 @@
 class Source:
     """Returns a json object"""
-    def run(*args):
+    def run(*args, config={}):
         pass
 
 class Trigger:
     """Returns as boolean"""
-    def run(*args):
+    def run(*args, config={}):
         pass
 
 class Action:
     """Doesn't return anything"""
-    def run(*args, **kwargs):
+    def run(*args, starg={}, config={}):
         pass
 
 class Waiter:
