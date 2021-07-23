@@ -2,7 +2,9 @@
 
 `pip install -e .`
 
-# TODO
+Run `yarn fork` on sherlock-v1-periphery repo. Make sure the sherlock address printed at the end of the script matches the on in `config.py`
+
+## TODO
 
 ## Implement single tx
 Issue: Currently there is a transaction executed for every premium update, these updates can als be grouped in a single transaction
